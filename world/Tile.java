@@ -26,9 +26,13 @@ import java.awt.Color;
  */
 public enum Tile {
 
-    FLOOR((char) 250, AsciiPanel.green),
+    FLOOR((char) 250, Color.gray),
 
     WALL((char) 177, AsciiPanel.brightBlack),
+
+    GREENTREE((char)5, AsciiPanel.green),
+
+    YELLOWTREE((char)6, AsciiPanel.yellow),
 
     BOUNDS('x', AsciiPanel.magenta);
 

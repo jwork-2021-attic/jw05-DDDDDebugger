@@ -38,8 +38,8 @@ public class PlayScreen implements Screen {
     private List<String> oldMessages;
 
     public PlayScreen() {
-        this.screenWidth = 80;
-        this.screenHeight = 24;
+        this.screenWidth = 60;
+        this.screenHeight = 30;
         createWorld();
         this.messages = new ArrayList<String>();
         this.oldMessages = new ArrayList<String>();
@@ -51,13 +51,14 @@ public class PlayScreen implements Screen {
     private void createCreatures(CreatureFactory creatureFactory) {
         this.player = creatureFactory.newPlayer(this.messages);
 
-        for (int i = 0; i < 8; i++) {
-            creatureFactory.newFungus();
-        }
+        // for (int i = 0; i < 8; i++) {
+        //     creatureFactory.newFungus();
+        // }
     }
 
     private void createWorld() {
-        world = new WorldBuilder(90, 31).makeCaves().build();
+        //world = new WorldBuilder(90, 31).makeCaves().build();
+        world = new WorldBuilder(90, 30).makeSimpleCaves().build();
     }
 
     private void displayTiles(AsciiPanel terminal, int left, int top) {
@@ -71,6 +72,7 @@ public class PlayScreen implements Screen {
                     terminal.write(world.glyph(wx, wy), x, y, world.color(wx, wy));
                 } else {
                     terminal.write(world.glyph(wx, wy), x, y, Color.DARK_GRAY);
+                    //terminal.write(world.glyph(wx, wy), x, y, world.color(wx, wy));
                 }
             }
         }
@@ -104,7 +106,7 @@ public class PlayScreen implements Screen {
         terminal.write(player.glyph(), player.x() - getScrollX(), player.y() - getScrollY(), player.color());
         // Stats
         String stats = String.format("%3d/%3d hp", player.hp(), player.maxHP());
-        terminal.write(stats, 1, 23);
+        terminal.write(stats, 1, 24);
         // Messages
         displayMessages(terminal, this.messages);
     }
@@ -113,15 +115,19 @@ public class PlayScreen implements Screen {
     public Screen respondToUserInput(KeyEvent key) {
         switch (key.getKeyCode()) {
             case KeyEvent.VK_LEFT:
+            case KeyEvent.VK_A:
                 player.moveBy(-1, 0);
                 break;
             case KeyEvent.VK_RIGHT:
+            case KeyEvent.VK_D:
                 player.moveBy(1, 0);
                 break;
             case KeyEvent.VK_UP:
+            case KeyEvent.VK_W:
                 player.moveBy(0, -1);
                 break;
             case KeyEvent.VK_DOWN:
+            case KeyEvent.VK_S:
                 player.moveBy(0, 1);
                 break;
         }

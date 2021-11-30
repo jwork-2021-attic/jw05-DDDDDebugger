@@ -79,7 +79,7 @@ public class Creature {
 
     public void modifyHP(int amount) {
         this.hp += amount;
-
+        //TODO:
         if (this.hp < 1) {
             world.remove(this);
         }

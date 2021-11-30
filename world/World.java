@@ -33,6 +33,7 @@ public class World {
     private List<Creature> creatures;
 
     public static final int TILE_TYPES = 2;
+    public static final int TREE_TYPES = 2;
 
     public World(Tile[][] tiles) {
         this.tiles = tiles;

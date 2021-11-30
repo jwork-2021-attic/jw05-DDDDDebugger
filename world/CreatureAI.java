@@ -46,12 +46,12 @@ class CreatureAI {
                 * creature.visionRadius()) {
             return false;
         }
-        for (Point p : new Line(creature.x(), creature.y(), x, y)) {
-            if (creature.tile(p.x, p.y).isGround() || (p.x == x && p.y == y)) {
-                continue;
-            }
-            return false;
-        }
+        // for (Point p : new Line(creature.x(), creature.y(), x, y)) {
+        //     if (creature.tile(p.x, p.y).isGround() || (p.x == x && p.y == y)) {
+        //         continue;
+        //     }
+        //     return false;
+        // }
         return true;
     }
 }

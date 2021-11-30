@@ -96,4 +96,49 @@ public class WorldBuilder {
     public WorldBuilder makeCaves() {
         return randomizeTiles().smooth(8);
     }
+
+    public WorldBuilder makeSimpleCaves() {
+        return simpleTiles();
+    }
+
+    private WorldBuilder simpleTiles(){
+        for (int width = 0; width < this.width; width++) {
+            for (int height = 0; height < this.height; height++) {
+                // Random rand = new Random();
+                // switch (rand.nextInt(World.TILE_TYPES)) {
+                //     case 0:
+                //         tiles[width][height] = Tile.FLOOR;
+                //         break;
+                //     case 1:
+                //         tiles[width][height] = Tile.WALL;
+                //         break;
+                // }
+                if((width == 0)||(width == this.width-1)||(height == 0)||(height == this.height-1)){
+                    tiles[width][height] = Tile.WALL;
+                }
+                else{
+                    tiles[width][height] = Tile.FLOOR;
+                }
+            }
+        }
+        //固定位置设置树林
+        generateForest(3, 3);
+        return this;
+    }
+
+    private void generateForest(int left, int top){
+        for(int i = 0; i+left < this.width && i < 10; i++)
+            for(int j = 0; j+top < this.height && j < 4; j++){
+                Random rand = new Random();
+                switch (rand.nextInt(World.TREE_TYPES)) {
+                    case 0:
+                        tiles[i+left][j+top] = Tile.GREENTREE;
+                        break;
+                    case 1:
+                        tiles[i+left][j+top] = Tile.YELLOWTREE;
+                        break;
+                }
+            }
+        
+    }
 }
