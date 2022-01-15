@@ -34,7 +34,9 @@ public enum Tile {
 
     YELLOWTREE((char)6, AsciiPanel.yellow),
 
-    BOUNDS('x', AsciiPanel.magenta);
+    BOUNDS('x', AsciiPanel.magenta),
+
+    EXIT((char)239, Color.green);
 
     private char glyph;
 

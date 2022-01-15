@@ -1,20 +1,3 @@
-/*
- * Copyright (C) 2015 Aeranythe Echosong
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
 package screen;
 
 import world.*;
@@ -24,10 +7,6 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author Aeranythe Echosong
- */
 public class PlayScreen implements Screen {
 
     private World world;
@@ -46,18 +25,25 @@ public class PlayScreen implements Screen {
 
         CreatureFactory creatureFactory = new CreatureFactory(this.world);
         createCreatures(creatureFactory);
+        //FIXME:在新的线程中更新creatures
+        this.world.beginUpdate();
     }
 
     private void createCreatures(CreatureFactory creatureFactory) {
+        //create player
         this.player = creatureFactory.newPlayer(this.messages);
 
-        // for (int i = 0; i < 8; i++) {
-        //     creatureFactory.newFungus();
-        // }
+    
+        //create enmey FIXME:
+        creatureFactory.newEnemy();
+        creatureFactory.newEnemy();
+        creatureFactory.newEnemy();
+        creatureFactory.newEnemy();
+        // creatureFactory.newEnemy();
+        // creatureFactory.newEnemy();
     }
 
     private void createWorld() {
-        //world = new WorldBuilder(90, 31).makeCaves().build();
         world = new WorldBuilder(90, 30).makeSimpleCaves().build();
     }
 
@@ -71,7 +57,7 @@ public class PlayScreen implements Screen {
                 if (player.canSee(wx, wy)) {
                     terminal.write(world.glyph(wx, wy), x, y, world.color(wx, wy));
                 } else {
-                    terminal.write(world.glyph(wx, wy), x, y, Color.DARK_GRAY);
+                    //terminal.write(world.glyph(wx, wy), x, y, Color.DARK_GRAY);
                     //terminal.write(world.glyph(wx, wy), x, y, world.color(wx, wy));
                 }
             }
@@ -80,13 +66,15 @@ public class PlayScreen implements Screen {
         for (Creature creature : world.getCreatures()) {
             if (creature.x() >= left && creature.x() < left + screenWidth && creature.y() >= top
                     && creature.y() < top + screenHeight) {
-                if (player.canSee(creature.x(), creature.y())) {
+                //FIXME:
+                if (player.canSee(creature.x(), creature.y())) {           
                     terminal.write(creature.glyph(), creature.x() - left, creature.y() - top, creature.color());
                 }
             }
         }
         // Creatures can choose their next action now
-        world.update();
+        //FIXME:
+        //world.update();
     }
 
     private void displayMessages(AsciiPanel terminal, List<String> messages) {
@@ -130,9 +118,19 @@ public class PlayScreen implements Screen {
             case KeyEvent.VK_S:
                 player.moveBy(0, 1);
                 break;
+            case KeyEvent.VK_ESCAPE:
+                return new PauseScreen(this);
+        }
+        if(player.x()==this.world.width()-2 && player.y()==this.world.height()-2){
+            this.world.KillEnemies();
+            return new WinScreen();
         }
         return this;
     }
+
+    public void killThreads(){
+        this.world.KillEnemies();
+    } 
 
     public int getScrollX() {
         return Math.max(0, Math.min(player.x() - screenWidth / 2, world.width() - screenWidth));

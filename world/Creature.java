@@ -19,17 +19,13 @@ package world;
 
 import java.awt.Color;
 
-/**
- *
- * @author Aeranythe Echosong
- */
-public class Creature {
+public class Creature implements Runnable {
 
-    private World world;
+    private final World world;
 
     private int x;
 
-    public void setX(int x) {
+    public void setX(final int x) {
         this.x = x;
     }
 
@@ -39,7 +35,7 @@ public class Creature {
 
     private int y;
 
-    public void setY(int y) {
+    public void setY(final int y) {
         this.y = y;
     }
 
@@ -47,13 +43,13 @@ public class Creature {
         return y;
     }
 
-    private char glyph;
+    private final char glyph;
 
     public char glyph() {
         return this.glyph;
     }
 
-    private Color color;
+    private final Color color;
 
     public Color color() {
         return this.color;
@@ -61,11 +57,11 @@ public class Creature {
 
     private CreatureAI ai;
 
-    public void setAI(CreatureAI ai) {
+    public void setAI(final CreatureAI ai) {
         this.ai = ai;
     }
 
-    private int maxHP;
+    private final int maxHP;
 
     public int maxHP() {
         return this.maxHP;
@@ -77,84 +73,92 @@ public class Creature {
         return this.hp;
     }
 
-    public void modifyHP(int amount) {
+    public synchronized void modifyHP(final int amount) {
         this.hp += amount;
-        //TODO:
+        // TODO:
         if (this.hp < 1) {
-            world.remove(this);
+            //player dead
+            this.world.KillEnemies();
+            Game.lose();
         }
     }
 
-    private int attackValue;
 
-    public int attackValue() {
-        return this.attackValue;
-    }
-
-    private int defenseValue;
+    protected int defenseValue;
 
     public int defenseValue() {
         return this.defenseValue;
     }
 
-    private int visionRadius;
+    protected int visionRadius;
 
     public int visionRadius() {
         return this.visionRadius;
     }
 
-    public boolean canSee(int wx, int wy) {
+    public boolean canSee(final int wx, final int wy) {
         return ai.canSee(wx, wy);
     }
 
-    public Tile tile(int wx, int wy) {
+    public Tile tile(final int wx, final int wy) {
         return world.tile(wx, wy);
     }
 
-    public void dig(int wx, int wy) {
+    public void dig(final int wx, final int wy) {
         world.dig(wx, wy);
     }
 
-    public void moveBy(int mx, int my) {
-        Creature other = world.creature(x + mx, y + my);
+    public void moveBy(final int mx, final int my) {
+        // FIXME:
+        final Creature other = world.creature(x + mx, y + my);
 
         if (other == null) {
             ai.onEnter(x + mx, y + my, world.tile(x + mx, y + my));
-        } else {
-            attack(other);
         }
     }
 
-    public void attack(Creature other) {
-        int damage = Math.max(0, this.attackValue() - other.defenseValue());
-        damage = (int) (Math.random() * damage) + 1;
+    // public void attack(final Creature other) {
+    //     int damage = Math.max(0, this.attackValue() - other.defenseValue());
+    //     damage = (int) (Math.random() * damage) + 1;
 
-        other.modifyHP(-damage);
+    //     other.modifyHP(-damage);
 
-        this.notify("You attack the '%s' for %d damage.", other.glyph, damage);
-        other.notify("The '%s' attacks you for %d damage.", glyph, damage);
-    }
+    //     this.notify("You attack the '%s' for %d damage.", other.glyph, damage);
+    //     other.notify("The '%s' attacks you for %d damage.", glyph, damage);
+    // }
 
-    public void update() {
+    protected void update() {
         this.ai.onUpdate();
     }
 
-    public boolean canEnter(int x, int y) {
+    public boolean canEnter(final int x, final int y) {
         return world.tile(x, y).isGround();
     }
 
-    public void notify(String message, Object... params) {
-        ai.onNotify(String.format(message, params));
+    public World getWorld(){
+        return this.world;
     }
 
-    public Creature(World world, char glyph, Color color, int maxHP, int attack, int defense, int visionRadius) {
+    public Creature(final World world, final char glyph, final Color color, final int maxHP, final int defense, final int visionRadius) {
         this.world = world;
         this.glyph = glyph;
         this.color = color;
         this.maxHP = maxHP;
         this.hp = maxHP;
-        this.attackValue = attack;
         this.defenseValue = defense;
         this.visionRadius = visionRadius;
+    }
+
+    volatile boolean killed = false;
+    public void Kill(){
+        killed = true;
+    }
+    @Override
+    public void run() {
+        //FIXME:
+        while (!killed) {
+            //System.out.println(Thread.currentThread().getName());
+            this.update();
+        }  
     }
 }

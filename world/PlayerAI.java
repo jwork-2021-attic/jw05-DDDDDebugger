@@ -33,11 +33,14 @@ public class PlayerAI extends CreatureAI {
     }
 
     public void onEnter(int x, int y, Tile tile) {
-        if (tile.isGround()) {
-            creature.setX(x);
-            creature.setY(y);
-        } else if (tile.isDiggable()) {
-            creature.dig(x, y);
+        //FIXME:
+        synchronized(tile){
+            if (tile.isGround()) {
+                creature.setX(x);
+                creature.setY(y);
+            } else if (tile.isDiggable()) {
+                creature.dig(x, y);
+            }
         }
     }
 

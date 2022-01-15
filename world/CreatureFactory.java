@@ -18,13 +18,8 @@
 package world;
 
 import java.util.List;
-
 import asciiPanel.AsciiPanel;
 
-/**
- *
- * @author Aeranythe Echosong
- */
 public class CreatureFactory {
 
     private World world;
@@ -34,16 +29,17 @@ public class CreatureFactory {
     }
 
     public Creature newPlayer(List<String> messages) {
-        Creature player = new Creature(this.world, (char)2, AsciiPanel.brightWhite, 100, 20, 5, 9);
-        world.addAtEmptyLocation(player);
+        Creature player = new Creature(this.world, (char)2, AsciiPanel.brightWhite, 100, 1, 8);
+        world.addPlayer(player);
         new PlayerAI(player, messages);
         return player;
     }
 
-    public Creature newFungus() {
-        Creature fungus = new Creature(this.world, (char)3, AsciiPanel.green, 10, 0, 0, 0);
-        world.addAtEmptyLocation(fungus);
-        new FungusAI(fungus, this);
-        return fungus;
+
+    public Creature newEnemy() {
+        Creature enemyCreature = new Creature(this.world, (char)3, AsciiPanel.red, 10, 0, 5);
+        world.addEnemy(enemyCreature);
+        new EnemyAI(enemyCreature);
+        return enemyCreature;
     }
 }

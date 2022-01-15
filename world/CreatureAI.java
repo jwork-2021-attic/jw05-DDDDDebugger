@@ -16,13 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package world;
-
 import java.awt.Point;
 
-/**
- *
- * @author Aeranythe Echosong
- */
 class CreatureAI {
 
     protected Creature creature;
@@ -33,6 +28,13 @@ class CreatureAI {
     }
 
     public void onEnter(int x, int y, Tile tile) {
+        //FIXME:
+        synchronized(tile){
+            if (tile.isGround()) {
+                creature.setX(x);
+                creature.setY(y);
+            }
+        }
     }
 
     public void onUpdate() {
@@ -46,12 +48,9 @@ class CreatureAI {
                 * creature.visionRadius()) {
             return false;
         }
-        // for (Point p : new Line(creature.x(), creature.y(), x, y)) {
-        //     if (creature.tile(p.x, p.y).isGround() || (p.x == x && p.y == y)) {
-        //         continue;
-        //     }
-        //     return false;
-        // }
         return true;
     }
+
+	public void attack(Creature other) {
+	}
 }

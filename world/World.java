@@ -31,6 +31,9 @@ public class World {
     private int width;
     private int height;
     private List<Creature> creatures;
+    private List<Creature> enemyList;
+    private List<Creature> players;
+    private List<Missile> missiles;
 
     public static final int TILE_TYPES = 2;
     public static final int TREE_TYPES = 2;
@@ -40,6 +43,10 @@ public class World {
         this.width = tiles.length;
         this.height = tiles[0].length;
         this.creatures = new ArrayList<>();
+        this.players = new ArrayList<>();
+        this.enemyList = new ArrayList<>();
+        this.missiles = new ArrayList<>();
+        Game.start();
     }
 
     public Tile tile(int x, int y) {
@@ -72,7 +79,7 @@ public class World {
         }
     }
 
-    public void addAtEmptyLocation(Creature creature) {
+    private void addAtEmptyLocation(Creature creature) {
         int x;
         int y;
 
@@ -84,6 +91,30 @@ public class World {
         creature.setX(x);
         creature.setY(y);
 
+        this.creatures.add(creature);
+    }
+
+    public void addEnemy(Creature enemy){
+
+        addAtEmptyLocation(enemy);
+        this.enemyList.add(enemy);
+
+    }
+
+    public void addPlayer(Creature creature){
+        int posx = 1;
+        int posy = 1;
+        while(!tile(posx, posy).isGround() && this.creature(posx, posy) != null){
+            if (posx <= posy) {
+                posx += 1;
+            }
+            else {
+                posy+=1;
+            }
+        }
+        creature.setX(posx);
+        creature.setY(posy);
+        this.players.add(creature);
         this.creatures.add(creature);
     }
 
@@ -99,16 +130,54 @@ public class World {
     public List<Creature> getCreatures() {
         return this.creatures;
     }
-
-    public void remove(Creature target) {
-        this.creatures.remove(target);
+        
+    public void updateMissiles(){
+        //TODO:更新所有子弹，做伤害判断
     }
-
-    public void update() {
-        ArrayList<Creature> toUpdate = new ArrayList<>(this.creatures);
-
-        for (Creature creature : toUpdate) {
-            creature.update();
+    
+    public void KillEnemies(){
+        for(Creature enemy:this.enemyList){
+            enemy.Kill();
         }
     }
+
+
+    public void stopEnemies(){
+        //TODO:
+
+    }
+
+    /**
+    *   create new threads to run each creature
+    *   @author Bruce Deng
+    */
+    public void beginUpdate(){
+        //FIXME:
+        ArrayList<Creature> toUpdate = new ArrayList<>(this.enemyList);
+
+        int index = 1;
+        for (Creature creature : toUpdate) {
+            Thread t = new Thread(creature);
+            t.setName("Enemy-Thread" + index++);
+            
+            t.start();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //TODO:
+
+    public void addMissile(Creature creature, Missile missile){
+        if(creature.hp() > 0){
+            missiles.add(missile);
+        }
+    }
+
+    public List<Creature> getPlayers(){
+        return this.players;
+    }    
 }

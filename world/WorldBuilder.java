@@ -2,6 +2,7 @@ package world;
 
 import java.util.Random;
 
+
 /*
  * Copyright (C) 2015 s-zhouj
  *
@@ -28,6 +29,7 @@ public class WorldBuilder {
     private int width;
     private int height;
     private Tile[][] tiles;
+
 
     public WorldBuilder(int width, int height) {
         this.width = width;
@@ -104,15 +106,6 @@ public class WorldBuilder {
     private WorldBuilder simpleTiles(){
         for (int width = 0; width < this.width; width++) {
             for (int height = 0; height < this.height; height++) {
-                // Random rand = new Random();
-                // switch (rand.nextInt(World.TILE_TYPES)) {
-                //     case 0:
-                //         tiles[width][height] = Tile.FLOOR;
-                //         break;
-                //     case 1:
-                //         tiles[width][height] = Tile.WALL;
-                //         break;
-                // }
                 if((width == 0)||(width == this.width-1)||(height == 0)||(height == this.height-1)){
                     tiles[width][height] = Tile.WALL;
                 }
@@ -122,23 +115,50 @@ public class WorldBuilder {
             }
         }
         //固定位置设置树林
-        generateForest(3, 3);
+        generateForest(3, 3, false);
+        //随机生成树林
+        for(int i = 0; i<20; i++){
+            Random rand = new Random();
+            int L = rand.nextInt(this.width);
+            int T = rand.nextInt(this.height);
+            generateForest(L, T, true);
+        }
+        tiles[this.width-2][this.height-2] = Tile.EXIT;
         return this;
     }
 
-    private void generateForest(int left, int top){
-        for(int i = 0; i+left < this.width && i < 10; i++)
-            for(int j = 0; j+top < this.height && j < 4; j++){
-                Random rand = new Random();
-                switch (rand.nextInt(World.TREE_TYPES)) {
-                    case 0:
-                        tiles[i+left][j+top] = Tile.GREENTREE;
-                        break;
-                    case 1:
-                        tiles[i+left][j+top] = Tile.YELLOWTREE;
-                        break;
+    private void generateForest(int left, int top, boolean randomTree){      
+        int treeType = 0;
+        for(int i = 0; i < 10; i++){
+            for(int j = 0;  j < 4; j++){
+                if(canPlantTree(i+left, j+top)){               
+                    if(randomTree){
+                        Random rand = new Random();
+                        treeType = rand.nextInt(World.TREE_TYPES + 3); // 1/5 yellow 4/5 green 
+                    }
+                    switch (treeType) {
+                        case 0:
+                            tiles[i+left][j+top] = Tile.GREENTREE;
+                            break;
+                        case 1:
+                            tiles[i+left][j+top] = Tile.YELLOWTREE;
+                            break;
+                        default:
+                            tiles[i+left][j+top] = Tile.GREENTREE;
+                            break;
+
+                    }             
                 }
             }
-        
+        }
     }
+
+    private boolean canPlantTree(int x, int y){
+        if(x > 0 && y > 0 && x < this.width-1 && y < this.height-1){
+            if(tiles[x][y].isGround()){
+                return true;
+            }
+        }
+        return false;
+    } 
 }

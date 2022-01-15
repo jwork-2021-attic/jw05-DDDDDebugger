@@ -64,7 +64,6 @@ public class Line implements Iterable<Point> {
                 y0 += sy;
             }
         }
-        ;
     }
 
     public Iterator<Point> iterator() {
